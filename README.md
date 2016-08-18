@@ -5,6 +5,7 @@
 
 ### ExAC data source
 - ExAC release 0.3.1
+	
 	We have removed individuals affected by severe pediatric disease, so this data set should serve as a useful reference set of allele frequencies for severe disease studies.[[http://exac.broadinstitute.org/about](http://exac.broadinstitute.org/about)]  
 	[ftp://ftp.broadinstitute.org/pub/ExAC\_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz](ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz)
 	use annovar convert2annovar.pl to convert annovar input  
