@@ -5,10 +5,9 @@
 
 ### ExAC data source
 - ExAC release 0.3.1
-	
-	We have removed individuals affected by severe pediatric disease, so this data set should serve as a useful reference set of allele frequencies for severe disease studies.[[http://exac.broadinstitute.org/about](http://exac.broadinstitute.org/about)]  
-	[ftp://ftp.broadinstitute.org/pub/ExAC\_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz](ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz)
-	use annovar convert2annovar.pl to convert annovar input  
+	- We have removed individuals affected by severe pediatric disease, so this data set should serve as a useful reference set of allele frequencies for severe disease studies.[[http://exac.broadinstitute.org/about](http://exac.broadinstitute.org/about)]  
+	- [ftp://ftp.broadinstitute.org/pub/ExAC\_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz](ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz)
+	- use annovar convert2annovar.pl to convert annovar input  
 	` > perl convert2annovar.pl -format vcf4 ExAC.r0.3.1.sites.vep.vcf > ExAC.r0.3.1.sites.vep.vcf.avinput  `
 	` > NOTICE: Finished reading 9362538 lines from VCF file  `
 	` > NOTICE: A total of 9362318 locus in VCF file passed QC threshold, representing 9415611 SNPs (6265499 transitions and 3150112 transversions) and 780261 indels/substitutions  `
