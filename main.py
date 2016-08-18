@@ -8,12 +8,15 @@ from sklearn import linear_model
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-
+import time
+import os
+import json
 
 
 # File routes
 import_dir = '/Users/rubisco/Desktop/Toronto/Mutation_analyse/input/'
-output_dir = '/Users/rubisco/Desktop/Toronto/Mutation_analyse/output/'
+output_dir = '/Users/rubisco/Desktop/Toronto/Mutation_analyse/output_%s/'\
+             % time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 patho_file = 'clinvar.hg19_multianno.filt.new.narm.txt'
 ctrl_file = 'ExAC.all.hg19_multianno.new.vcf.hq.input.narm.txt'
 out_file_name = 'analysis.log.txt'
@@ -28,7 +31,7 @@ contaminate_start = 0.00
 contaminate_end = 0.40
 contaminate_step = 0.01
 
-
+os.mkdir(output_dir)
 out_file = open(output_dir + out_file_name, 'w')
 column_name = ['Chr', 'Pos', 'Ref', 'Alt', 'Gene_refGene',
                'SIFT', 'Polyphen2_HDIV', 'Polyphen2_HVAR', 'MutationTaster', 'MutationAssessor',
@@ -38,6 +41,11 @@ column_name = ['Chr', 'Pos', 'Ref', 'Alt', 'Gene_refGene',
                'AC', 'AN', 'AF', 'Freq_group']
 out_format = ['prior', 'pathogenic_mutation', 'control_mutation', 'score', 'freq_group',
               'select', 'contaminate', 'contaminate_rate', 'auprc', 'pr90', 'pr10']
+f = open(output_dir + 'settings.log.txt', 'w')
+setting = {'patho': patho_file, 'ctrl': ctrl_file, 'score': score_list, 'group': group_select_list,
+           'contaminate': {'select': contaminate_select, 'start': contaminate_start,
+                           'end': contaminate_end, 'step': contaminate_step}}
+f.write(json.dumps(setting, indent=4))
 
 
 def split_df_gene(df):
@@ -205,7 +213,6 @@ def analysis_data():
                                 # contamination
                                 c = contaminate_start
                                 while c <= contaminate_end:
-                                    print c,
                                     index = (score, group, select, contaminate, '%.2f' % c)
                                     score_df = get_score_df(patho=patho_df, ctrl=ctrl_df, gene_spec=False,
                                                             score=score, random=True, freqg=group, contaminate=c)
@@ -228,7 +235,7 @@ def analysis_data():
     return td
 
 
-def draw_prc(data_dict, prefix):
+def draw_prc(data_dict, prefix, contaminate=False):
     plt.clf()
     items = data_dict.items()
     items.sort()
@@ -241,7 +248,8 @@ def draw_prc(data_dict, prefix):
     plt.ylim([0.0, 1.05])
     plt.xlim([0.0, 1.0])
     plt.title(prefix + ' Precision-Recall Curve')
-    plt.legend(loc="lower left")
+    if not contaminate:
+        plt.legend(loc="lower left")
     plt.savefig(output_dir + prefix + '.prc.png')
     return
 
@@ -325,7 +333,7 @@ def draw_plot(td):
 
         for group, gdict in freq_pr_contaminate_dict.items():
             prefix = '_'.join([score, group, 'contamination'])
-            draw_prc(gdict, prefix)  # contaminate rate PRC
+            draw_prc(gdict, prefix, contaminate=True)  # contaminate rate PRC
 
     return
 
