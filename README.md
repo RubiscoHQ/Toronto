@@ -63,14 +63,14 @@
 5. ExAC at least one Hom mutation  
 	Generate 1hom group based on AC\_Hom \>= 1, which means at least one individual carry a homozygous allele.
 6. retrench and generate input file  
-	extract useful informations for analysis. Score values, MAF (using ExAC popmax), Gene and so on.  
+	extract useful informations for analysis. Score values, MAF (using ExAC AF_all), Gene and so on.  
 	Defining 6 Freq group according to MAF:  
 	I:   singleton, AN\_All == 1;  
-	II:  2-10 alleles, 2 \<= AN\_All \<= 10;  
-	III: 0.0001 \<= AF\_All \<= 0.001  
-	IV:  0.001 \<= AF\_All \<= 0.01  
-	V:   0.01 \<= AF\_All \<= 0.1  
-	VI:  0.1 \<= AF\_All  
+	II:  2-10 alleles, 2 \<= AN\_All \<= 12;  
+	III: 0.0001 \< AF\_All \<= 0.001  
+	IV:  0.001 \< AF\_All \<= 0.01  
+	V:   0.01 \< AF\_All \<= 0.1  
+	VI:  0.1 \< AF\_All  
 	 
 7. remove all variants contain NA value for all analyzed scores (SIFT, Polyphen2\_HDIV, Polyphen2\_HVAR, MutationTaster, MutationAssessor, PROVEAN, VEST3, CADD, DANN, fathmm-MKL\_coding, MetaSVM, MetaLR, GERP++\_RS, phyloP7way\_vertebrate, phyloP20way\_mammalian, phastCons7way\_vertebrate, phastCons20way\_mammalian, SiPhy\_29way\_logOdds, 18 scores. Discard LRT and FATHMM for too many NAs).
 

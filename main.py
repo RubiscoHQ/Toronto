@@ -18,21 +18,24 @@ import_dir = '/Users/rubisco/Desktop/Toronto/Mutation_analyse/input/'
 output_dir = '/Users/rubisco/Desktop/Toronto/Mutation_analyse/output_%s/'\
              % time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
 patho_file = 'clinvar.hg19_multianno.filt.new.narm.txt'
-ctrl_file = 'ExAC.all.hg19_multianno.new.vcf.hq.input.narm.txt'
+ctrl_file = 'ExAC.nonpat.hg19_multianno.new.vcf.hq.1hom.input.narm.txt'
 out_file_name = 'analysis.log.txt'
 
 # Score to analyze
-score_list = ['SIFT']
+score_list = ['SIFT', 'Polyphen2_HDIV', 'Polyphen2_HVAR', 'MutationTaster', 'MutationAssessor',
+              'PROVEAN', 'VEST3', 'CADD', 'DANN', 'fathmm-MKL_coding', 'MetaSVM', 'MetaLR',
+              'GERP++_RS', 'phyloP7way_vertebrate', 'phyloP20way_mammalian',
+              'phastCons7way_vertebrate', 'phastCons20way_mammalian', 'SiPhy_29way_logOdds'
+              ]
 group_select_list = ['I', 'II', 'III', 'IV', 'V', 'VI']
 
 # Contaminate setting
-contaminate_select = 9000
+contaminate_select = 8000
 contaminate_start = 0.00
-contaminate_end = 0.40
+contaminate_end = 0.400
 contaminate_step = 0.01
 
-os.mkdir(output_dir)
-out_file = open(output_dir + out_file_name, 'w')
+
 column_name = ['Chr', 'Pos', 'Ref', 'Alt', 'Gene_refGene',
                'SIFT', 'Polyphen2_HDIV', 'Polyphen2_HVAR', 'MutationTaster', 'MutationAssessor',
                'PROVEAN', 'VEST3', 'CADD', 'DANN', 'fathmm-MKL_coding', 'MetaSVM', 'MetaLR',
@@ -41,11 +44,19 @@ column_name = ['Chr', 'Pos', 'Ref', 'Alt', 'Gene_refGene',
                'AC', 'AN', 'AF', 'Freq_group']
 out_format = ['prior', 'pathogenic_mutation', 'control_mutation', 'score', 'freq_group',
               'select', 'contaminate', 'contaminate_rate', 'auprc', 'pr90', 'pr10']
-f = open(output_dir + 'settings.log.txt', 'w')
-setting = {'patho': patho_file, 'ctrl': ctrl_file, 'score': score_list, 'group': group_select_list,
-           'contaminate': {'select': contaminate_select, 'start': contaminate_start,
-                           'end': contaminate_end, 'step': contaminate_step}}
-f.write(json.dumps(setting, indent=4))
+
+
+def setup():
+    os.mkdir(output_dir)
+    global out_file
+    out_file = open(output_dir + out_file_name, 'w')
+    f = open(output_dir + 'settings.log.txt', 'w')
+    setting = {'patho': patho_file, 'ctrl': ctrl_file, 'score': score_list, 'group': group_select_list,
+               'contaminate': {'select': contaminate_select, 'start': contaminate_start,
+                               'end': contaminate_end, 'step': contaminate_step}}
+    print json.dumps(setting, indent=4)
+    f.write(json.dumps(setting, indent=4))
+    return
 
 
 def split_df_gene(df):
@@ -213,6 +224,7 @@ def analysis_data():
                                 # contamination
                                 c = contaminate_start
                                 while c <= contaminate_end:
+                                    print c,
                                     index = (score, group, select, contaminate, '%.2f' % c)
                                     score_df = get_score_df(patho=patho_df, ctrl=ctrl_df, gene_spec=False,
                                                             score=score, random=True, freqg=group, contaminate=c)
@@ -254,15 +266,19 @@ def draw_prc(data_dict, prefix, contaminate=False):
     return
 
 
-def draw_score_distribution(data_dict, prefix, sel=1, shade=True):
+def draw_score_distribution(data_dict, prefix, sel=1, shade=True, contaminate=False):
     plt.clf()
     items = data_dict.items()
     items.sort()
     for key, value in items:
-        plot = sns.distplot(array(value[sel]), hist=False, rug=False, kde_kws={"shade": shade}, label=key)
+        if contaminate:
+            plot = sns.distplot(array(value[sel]), hist=False, rug=False, kde_kws={"shade": shade})
+        else:
+            plot = sns.distplot(array(value[sel]), hist=False, rug=False, kde_kws={"shade": shade}, label=key)
         plt.xlabel('Score value')
         plt.title(prefix + ' Score Distribution')
-        plt.legend(loc="upper left")
+        if not contaminate:
+            plt.legend(loc="upper left")
     named = {1: 'control', 0: 'patho'}
     plot.get_figure().savefig(output_dir + prefix + '_' + named[sel] +'.dist.png')
     return
@@ -329,7 +345,7 @@ def draw_plot(td):
 
         for group, gdict in freq_score_contaminate_dict.items():
             prefix = '_'.join([score, group, 'contamination'])
-            #  draw_score_distribution(gdict, prefix, shade=False)  # ctrl mut dist against
+            draw_score_distribution(gdict, prefix, shade=False, contaminate=True)  # ctrl mut dist against c rate
 
         for group, gdict in freq_pr_contaminate_dict.items():
             prefix = '_'.join([score, group, 'contamination'])
@@ -338,14 +354,12 @@ def draw_plot(td):
     return
 
 
-def analysis_prc():
+def analysis_prc(ana_para='auprc'):
     data0 = pd.read_table(output_dir + out_file_name)
-
     # For contamination analysis
-    data = data0[data0.contaminate == 'T']
-    for score in list(set(list(data.score))):
-        data = data[data.score == score]
-
+    data1 = data0[data0.contaminate == 'T']
+    for score in list(set(list(data1.score))):
+        data = data1[data1.score == score]
         func_dict = {}
         data_dict = {}
         group_list = list(set(list(data.freq_group)))
@@ -353,7 +367,7 @@ def analysis_prc():
         for group in group_list:
             data_group = data[data.freq_group == group]
             fit = linear_model.LinearRegression()
-            b = array(data_group.auprc).transpose()
+            b = array(data_group[ana_para]).transpose()
             a = array([data_group.contaminate_rate]).transpose()
             y = fit.fit(a, b).predict(a)
             func_dict[group] = fit
@@ -361,16 +375,18 @@ def analysis_prc():
 
         grey = 0.1
         plt.clf()
-        for group, data_l in data_dict.items():
-            plt.scatter(data_l[0], data_l[1], color=str(grey))
+        items = data_dict.items()
+        items.sort()
+        for group, data_l in items:
+            plt.scatter(data_l[0], data_l[1], color=str(grey), label=group)
             plt.plot(data_l[0], data_l[2], color=str(grey), linewidth=2)
             grey += 0.15
         plt.xlim([-0.01, contaminate_end])
-        plt.ylim([min(data.auprc) - 0.003, max(data.auprc) + 0.003])
+        plt.ylim([min(data[ana_para]) - 0.003, max(data[ana_para]) + 0.003])
         plt.xlabel('Contamination Rate')
-        plt.ylabel('AUPRC')
-        plt.legend(group_list)
-        plt.savefig(output_dir + score + '_contaminate_scatter.png')
+        plt.ylabel(ana_para.upper())
+        plt.legend(loc="lower left")
+        plt.savefig(output_dir + score + '_' + ana_para.upper() + '_contaminate_scatter.png')
 
         x = 0.0
         predict_dict = {}
@@ -425,13 +441,18 @@ def analysis_prc():
         with sns.axes_style("white"):
             sns.heatmap(rd.T, linewidths=1, annot=True, mask=mask)
             plt.title(score+' Relative Contamination Rate')
-            plt.savefig(output_dir + score+'_Relative_Contamination_Rate.count.png')
+            plt.savefig(output_dir + score + '_' + ana_para.upper() + '_Relative_Contamination_Rate.count.png')
 
     return
 
+
 if __name__ == '__main__':
+    setup()
     td = analysis_data()
     draw_plot(td)
     out_file.close()
-    analysis_prc()
 
+    sns.set_palette('PuBuGn_d', n_colors=int((contaminate_end - contaminate_start) / contaminate_step))
+    analysis_prc()
+    analysis_prc(ana_para='pr90')
+    analysis_prc(ana_para='pr10')
