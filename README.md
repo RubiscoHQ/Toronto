@@ -5,36 +5,36 @@
 
 ### ExAC data source
 - ExAC release 0.3.1
-	> We have removed individuals affected by severe pediatric disease, so this data set should serve as a useful reference set of allele frequencies for severe disease studies.[[http://exac.broadinstitute.org/about](http://exac.broadinstitute.org/about)]  
-	> [ftp://ftp.broadinstitute.org/pub/ExAC\_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz](ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz)
-	> use annovar convert2annovar.pl to convert annovar input  
-	> `> perl convert2annovar.pl -format vcf4 ExAC.r0.3.1.sites.vep.vcf > ExAC.r0.3.1.sites.vep.vcf.avinput  
-	> > NOTICE: Finished reading 9362538 lines from VCF file  
-	> > NOTICE: A total of 9362318 locus in VCF file passed QC threshold, representing 9415611 SNPs (6265499 transitions and 3150112 transversions) and 780261 indels/substitutions  
-	> > NOTICE: Finished writing 9415611 SNP genotypes (6265499 transitions and 3150112 transversions) and 780261 indels`
+	- We have removed individuals affected by severe pediatric disease, so this data set should serve as a useful reference set of allele frequencies for severe disease studies.[[http://exac.broadinstitute.org/about](http://exac.broadinstitute.org/about)]  
+	- [ftp://ftp.broadinstitute.org/pub/ExAC\_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz](ftp://ftp.broadinstitute.org/pub/ExAC_release/release0.3.1/ExAC.r0.3.1.sites.vep.vcf.gz)
+	- use annovar convert2annovar.pl to convert annovar input  
+	> perl convert2annovar.pl -format vcf4 ExAC.r0.3.1.sites.vep.vcf > ExAC.r0.3.1.sites.vep.vcf.avinput
+	> NOTICE: Finished reading 9362538 lines from VCF file  
+	> NOTICE: A total of 9362318 locus in VCF file passed QC threshold, representing 9415611 SNPs (6265499 transitions and 3150112 transversions) and 780261 indels/substitutions  
+	> NOTICE: Finished writing 9415611 SNP genotypes (6265499 transitions and 3150112 transversions) and 780261 indels
 - ExAC on non-TCGA samples based on release 0.3  
-	[http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
+	- [http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
 - ExAC on non-Psychiatric disease samples based on release 0.3  
-	[http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
+	- [http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
 - ExAC non-both  
-	Merge both non-psy and non-tcga. 
+	- Merge both non-psy and non-tcga. 
 
 ### Clinvar data source
 - Clinvar\_20160302  
-	[http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
+	- [http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
 
 ### Annotation data source
 - refGene (gene based annotation)  
-	[http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
+	- [http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
 - dbNSFP version 3.0a   
-	(whole-exome SIFT, PolyPhen2 HDIV, PolyPhen2 HVAR, LRT, MutationTaster, MutationAssessor, FATHMM, MetaSVM, MetaLR, VEST, CADD, GERP++, DANN, fitCons, PhyloP and SiPhy scores from )  
-	[https://sites.google.com/site/jpopgen/dbNSFP](https://sites.google.com/site/jpopgen/dbNSFP)  
-	[http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
+	- (whole-exome SIFT, PolyPhen2 HDIV, PolyPhen2 HVAR, LRT, MutationTaster, MutationAssessor, FATHMM, MetaSVM, MetaLR, VEST, CADD, GERP++, DANN, fitCons, PhyloP and SiPhy scores from )  
+	- [https://sites.google.com/site/jpopgen/dbNSFP](https://sites.google.com/site/jpopgen/dbNSFP)  
+	- [http://annovar.openbioinformatics.org/en/latest/user-guide/download/](http://annovar.openbioinformatics.org/en/latest/user-guide/download/)
 
 ### Annotation software
 - ANNOVAR  
-	All annotation database also download form Annovar  
-	[http://annovar.openbioinformatics.org/en/latest/](http://annovar.openbioinformatics.org/en/latest/)  
+	- All annotation database also download form Annovar  
+	- [http://annovar.openbioinformatics.org/en/latest/](http://annovar.openbioinformatics.org/en/latest/)  
 
 ### Data processing
 1. Using annovar to annotate respective input databases with refGene, dbNSFP, Clinvar  
@@ -44,27 +44,32 @@
 	- by Pathogenicity: for ExAC mutations exclude those annotated “Pathogenic” by Clinvar; for Clinvar only remains “Pathogenic” mutations
 3. Annotate ExAC vcf information using ExAC.r0.3.1.sites.vep.vcf
 4. ExAC HighQuality Filter  
-	Generate HQ group based on ExAC high quality definition
-	> (1) they were given a PASS filter status by VQSR,   
-	> (2) at least 80% of the individuals in the dataset had at least depth (DP) \>= 10 and genotype quality (GQ) \>= 20 (i.e. AN_Adj \>= 60706*0.8*2 or 97130),   
-	> (3) there was at least one individual harboring the alternate allele with depth \>= 10 and GQ \>= 20,  
-	> (4) the variant was not located in the 10 1-kb regions of the genome with the highest levels of multi-allelic (quad-allelic or higher) variation.  
-	> ##    chrom bin_start   bin_end freq  
-	> ## 1     14 106330000 106331000  109  
-	> ## 2      2  89160000  89161000  103  
-	> ## 3     14 106329000 106330000   76  
-	> ## 4     14 107178000 107179000   63  
-	> ## 5     17  18967000  18968000   46  
-	> ## 6     22  23223000  23224000   44  
-	> ## 7      1 152975000 152976000   42  
-	> ## 8      2  89161000  89162000   39  
-	> ## 9     14 107179000 107180000   38  
-	> ## 10    17  19091000  19092000   38
+	- Generate HQ group based on ExAC high quality definition
+	1. they were given a PASS filter status by VQSR,   
+	2. at least 80% of the individuals in the dataset had at least depth (DP) \>= 10 and genotype quality (GQ) \>= 20 (i.e. AN_Adj \>= 60706*0.8*2 or 97130),   
+	3. there was at least one individual harboring the alternate allele with depth \>= 10 and GQ \>= 20,  
+	4. the variant was not located in the 10 1-kb regions of the genome with the highest levels of multi-allelic (quad-allelic or higher) variation.  
+	##    chrom bin_start   bin_end freq  
+	## 1     14 106330000 106331000  109  
+	## 2      2  89160000  89161000  103  
+	## 3     14 106329000 106330000   76  
+	## 4     14 107178000 107179000   63  
+	## 5     17  18967000  18968000   46  
+	## 6     22  23223000  23224000   44  
+	## 7      1 152975000 152976000   42  
+	## 8      2  89161000  89162000   39  
+	## 9     14 107179000 107180000   38  
+	## 10    17  19091000  19092000   38
 5. ExAC at least one Hom mutation  
 	Generate 1hom group based on AC\_Hom \>= 1, which means at least one individual carry a homozygous allele.
 6. retrench and generate input file  
+<<<<<<< HEAD
 	extract useful informations for analysis. Score values, MAF (using ExAC AF_all), Gene and so on.  
 	Defining 6 Freq group according to MAF:  
+=======
+	- extract useful informations for analysis. Score values, MAF (using ExAC popmax), Gene and so on.  
+	- Defining 6 Freq group according to MAF:  
+>>>>>>> 1594e417b2965416a64c986a7dd1a739fbfe8ec4
 	I:   singleton, AN\_All == 1;  
 	II:  2-10 alleles, 2 \<= AN\_All \<= 12;  
 	III: 0.0001 \< AF\_All \<= 0.001  
